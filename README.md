@@ -1,7 +1,7 @@
 # CB-SCTC
-The pytorch code for our paper 'Cross-block Sparse Class Token Contrast  for Weakly Supervised Semantic Segmentation'.
+The pytorch code for our paper 'Cross-block Sparse Class Token Contrast for Weakly Supervised Semantic Segmentation'.
 
-[[Project Page]](https://xulianuwa.github.io/MCTformer-project-page/)
+[[Project Page]](https://github.com/Jingfeng-Tang/CB-SCTC)
 
 <p align="center">
   <img src="cb-sctc_6.png" width="1080" title="Overview of CB-SCTC" >
@@ -31,4 +31,4 @@ If you have any questions, you can either create issues or contact me by email
 [tangjingfeng@stmail.ujs.edu.cn](tangjingfeng@stmail.ujs.edu.cn)
 
 ## Acknowledgement
-We heavily borrowed [MCTFormerV1](https://github.com/xulianuwa/MCTformer) to construct our backbone. Many thanks to their brilliant works!
+We heavily borrowed [MCTFormerV1](https://github.com/xulianuwa/MCTformer) to construct our backbone. Many thanks for their brilliant work!
