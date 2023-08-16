@@ -4,10 +4,10 @@ The pytorch code for our paper 'Cross-block Sparse Class Token Contrast for Weak
 [[Project Page]](https://github.com/Jingfeng-Tang/CB-SCTC)
 
 <p align="center">
-  <img src="cb-sctc_6.png" width="1080" title="Overview of CB-SCTC" >
+  <img src="fig2_cb-sctc_8.png" width="1080" title="The architecture of the proposed WSSS framework(CB-SCTC)" >
 </p>
 <p align = "center">
-Fig.1 - Overview of CB-SCTC
+Fig.1 - The architecture of the proposed WSSS framework(CB-SCTC)
 </p>
 
 ## Prerequisite
@@ -15,7 +15,9 @@ Fig.1 - Overview of CB-SCTC
 ```
 pip install -r requirements.txt
 ```
-- Download [the PASCAL VOC 2012 development kit](http://host.robots.ox.ac.uk/pascal/VOC/voc2012).
+- Download [the PASCAL VOC 2012 training and validation sets](http://host.robots.ox.ac.uk/pascal/VOC/voc2012/VOCtrainval_11-May-2012.tar).
+- Download [the PASCAL VOC 2012 test set](http://host.robots.ox.ac.uk:8080/eval/downloads/VOC2012test.tar).
+- Download [the PASCAL VOC 2012 SBD set](https://drive.google.com/file/d/1doCUI9h_lxhxIS7WZX8SSXpDyCjIEwZj/view?usp=drive_link).
 
 ## Run for PASCAL VOC 2012 dataset
 ```
