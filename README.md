@@ -19,11 +19,11 @@ pip install -r requirements.txt
 
 ## Run for PASCAL VOC 2012 dataset
 ```
-bash run_for_pascalVoc2012.sh
+bash run_for_PASCALVOC2012.sh
 ```
 ## Run for MS COCO 2014 dataset
 ```
-bash run_for_msCoco2014.sh
+bash run_for_MSCOCO2014.sh
 ```
 
 ## Contact
