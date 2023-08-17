@@ -23,6 +23,9 @@ pip install -r requirements.txt
 - Download [the MS COCO 2014 validation set](http://images.cocodataset.org/zips/val2014.zip).
 - Download [the MS COCO 2014 training and validation annotations](http://images.cocodataset.org/annotations/annotations_trainval2014.zip).
 
+- Download [the segNet pre-trained weight](https://drive.google.com/file/d/1TKYhIq1uxnEgv6oX9Exc09uPJ4bf95eQ/view?usp=drive_link).
+
+
 ## Run for PASCAL VOC 2012 dataset
 ```
 bash run_for_PASCALVOC2012.sh
