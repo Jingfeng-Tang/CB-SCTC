@@ -106,6 +106,8 @@ def get_args_parser():
     parser.add_argument('--resplit', action='store_true', default=False,
                         help='Do not random erase first (clean) augmentation split')
 
+    parser.add_argument("--loss_alpha", default=0.1, type=float)
+    parser.add_argument("--shallow_block", default=10, type=int)
 
     # * Finetuning params
     parser.add_argument('--finetune', default='', help='finetune from checkpoint')
@@ -130,7 +132,6 @@ def get_args_parser():
                         help='')
     parser.set_defaults(pin_mem=True)
 
-
     # generating attention maps
     parser.add_argument('--gen_attention_maps', action='store_true')
     parser.add_argument('--patch-size', type=int, default=16)
@@ -149,6 +150,7 @@ def get_args_parser():
     parser.add_argument('--out-crf', type=str, default=None)
     parser.add_argument("--low_alpha", default=1, type=int)
     parser.add_argument("--high_alpha", default=12, type=int)
+    parser.add_argument('--sparsity', type=float, default=0.75)
 
     return parser
 
@@ -297,12 +299,16 @@ def main(args):
         train_stats = train_one_epoch(
             model, data_loader_train,
             optimizer, device, epoch, loss_scaler,
-            args.clip_grad
+            args.clip_grad,
+            args.loss_alpha,
+            args.shallow_block,
+            args.sparsity,
+
         )
 
         lr_scheduler.step(epoch)
 
-        test_stats = evaluate(data_loader_val, model, device)
+        test_stats = evaluate(data_loader_val, model, device, args.sparsity)
         print(f"mAP of the network on the {len(dataset_val)} test images: {test_stats['mAP']*100:.1f}%")
         if test_stats["mAP"] > max_accuracy and args.output_dir:
             checkpoint_paths = [output_dir / 'checkpoint_best.pth']

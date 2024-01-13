@@ -13,10 +13,35 @@ import os
 from pathlib import Path
 
 
-def train_one_epoch(model: torch.nn.Module, data_loader: Iterable,
-                    optimizer: torch.optim.Optimizer, device: torch.device,
-                    epoch: int, loss_scaler, max_norm: float = 0,
-                    set_training_mode=True):
+def compute_nce_loss(block_11_clstoken, block_12_clstoken):
+    nce_output = 0.0
+
+    nceloss = InfoNCE()
+    for i in range(64):
+        for j in range(20):
+            if j != 19:
+                negativesample = torch.cat((block_12_clstoken[i][0:j], block_12_clstoken[i][j + 1:]), dim=0)
+            else:
+                negativesample = block_12_clstoken[i][0:j]
+            output = nceloss(block_12_clstoken[i][j].unsqueeze(0), block_11_clstoken[i][j].unsqueeze(0), negativesample)
+            nce_output = nce_output + output
+    nce_output = nce_output / (64 * 20)
+
+    return nce_output
+
+
+def train_one_epoch(model: torch.nn.Module,
+                    data_loader: Iterable,
+                    optimizer: torch.optim.Optimizer,
+                    device: torch.device,
+                    epoch: int,
+                    loss_scaler,
+                    max_norm: float = 0,
+                    loss_alpha: float = 0.1,
+                    shallow_block: int = 9,
+                    sparsity=10,
+                    set_training_mode=True,
+                    ):
     model.train(set_training_mode)
     metric_logger = utils.MetricLogger(delimiter="  ")
     metric_logger.add_meter('lr', utils.SmoothedValue(window_size=1, fmt='{value:.6f}'))
@@ -29,15 +54,15 @@ def train_one_epoch(model: torch.nn.Module, data_loader: Iterable,
 
         nce_outputs = None
         with torch.cuda.amp.autocast():
-            outputs = model(samples)
+            outputs = model(samples, shallow_block=shallow_block, sparsity=sparsity)
             if not isinstance(outputs, torch.Tensor):
-                outputs, nce_outputs = outputs
+                outputs, block_11_clstoken, block_12_clstoken = outputs
 
             loss = F.multilabel_soft_margin_loss(outputs, targets)
             metric_logger.update(cls_loss=loss.item())
             if nce_outputs is not None:
                 metric_logger.update(nce_loss=nce_outputs.item())
-                loss = loss + nce_outputs.item()
+                loss = loss + loss_alpha * nce_outputs
 
         loss_value = loss.item()
 
@@ -63,7 +88,7 @@ def train_one_epoch(model: torch.nn.Module, data_loader: Iterable,
 
 
 @torch.no_grad()
-def evaluate(data_loader, model, device):
+def evaluate(data_loader, model, device, sparsity):
     criterion = torch.nn.MultiLabelSoftMarginLoss()
     mAP = []
 
@@ -79,9 +104,9 @@ def evaluate(data_loader, model, device):
         batch_size = images.shape[0]
 
         with torch.cuda.amp.autocast():
-            output = model(images)
+            output = model(images, sparsity=sparsity)
             if not isinstance(output, torch.Tensor):
-                output, patch_output = output
+                output, block_11_clstoken, block_12_clstoken = output
             loss = criterion(output, target)
             output = torch.sigmoid(output)
 

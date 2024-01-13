@@ -8,8 +8,6 @@ import torch.nn.functional as F
 
 import math
 from info_nce import InfoNCE
-import matplotlib.pyplot as plt
-import numpy
 
 __all__ = [
     'deit_small_MCTformerV1_patch16_224'
@@ -55,7 +53,7 @@ class MCTformerV1(VisionTransformer):
         patch_pos_embed = patch_pos_embed.permute(0, 2, 3, 1).view(1, -1, dim)
         return torch.cat((class_pos_embed, patch_pos_embed), dim=1)
 
-    def forward_features(self, x, n=12):
+    def forward_features(self, x, n=12, shallow_block=9, sparsity=10):
         B, nc, w, h = x.shape
         x = self.patch_embed(x)
 
@@ -65,63 +63,52 @@ class MCTformerV1(VisionTransformer):
         x = self.pos_drop(x)
 
         attn_weights = []
-
+        # print(f'222shallow_block: {shallow_block}')
         for i, blk in enumerate(self.blocks):
-            x, weights_i = blk(x)
-            if i == 9:                  # 10 change to 9
-                block11_x = x.detach().clone()
+            x, weights_i = blk(x, sparsity)
+            if i == shallow_block:  # 10改9----------------------------------------------------------------------
+                # print(f'333shallow_block: {shallow_block}')
+                # a = []
+                # b = a[10]
+                block11_x = x.clone()
             elif i == 11:
-                block12_x = x.detach().clone()
+                block12_x = x.clone()
             if len(self.blocks) - i <= n:
                 attn_weights.append(weights_i)
 
         return x[:, 0:self.num_classes], attn_weights, block11_x, block12_x
 
-    def forward(self, x, n_layers=12, return_att=False):
-        x, attn_weights, block11_x, block12_x = self.forward_features(x)
+    def forward(self, x, n_layers=12, return_att=False, shallow_block=9, sparsity=10):
+        # print(f'111shallow_block: {shallow_block}')
+        # a = []
+        # b = a[10]
+        x, attn_weights, block11_x, block12_x = self.forward_features(x, shallow_block=shallow_block, sparsity=sparsity)
         # print(f'block11_x.shape: {block11_x.shape}')  # 64*216*384
-        block_11_clstoken = block11_x[:, 0:20, :]
-        block_12_clstoken = block12_x[:, 0:20, :]
+        # block_11_clstoken = block11_x[:, 0:20, :]
+        # block_12_clstoken = block12_x[:, 0:20, :]
+        block11_x = block11_x[:, 0:20, :]
+        block12_x = block12_x[:, 0:20, :]
         # print(f'block_11_clstoken.shape: {block_11_clstoken.shape}')    # 64*20*384
-        # not add project layer
-        # compute loss
-        nce_output = 0.0
-
-        if self.training:
-            nceloss = InfoNCE()
-            for i in range(64):
-                for j in range(20):
-                    if j != 19:
-                        negativesample = torch.cat((block_12_clstoken[i][0:j], block_12_clstoken[i][j+1:]), dim=0)
-                    else:
-                        negativesample = block_12_clstoken[i][0:j]
-                    # print(f'negativesample: {negativesample.shape}')
-                    output = nceloss(block_12_clstoken[i][j].unsqueeze(0), block_11_clstoken[i][j].unsqueeze(0), negativesample)
-                    nce_output = nce_output + output
-            nce_output = nce_output / (64*20)
-
-
+        # # 加投影层
+        # block_11_x_pj = self.pj1(block11_x)
+        # block_11_x_pj = self.act(block_11_x_pj)
+        # block_11_clstoken = self.pj2(block_11_x_pj)
+        #
+        # block_12_x_pj = self.pj3(block12_x)
+        # block_12_x_pj = self.act(block_12_x_pj)
+        # block_12_clstoken = self.pj4(block_12_x_pj)
 
         attn_weights = torch.stack(attn_weights)  # 12 * B * H * N * N
         attn_weights = torch.mean(attn_weights, dim=2)  # 12 * B * N * N
         mtatt = attn_weights[-n_layers:].sum(0)[:, 0:self.num_classes, self.num_classes:]
         patch_attn = attn_weights[:, :, self.num_classes:, self.num_classes:]
-        # print(f'patch_attn.shape: {patch_attn.shape}')
-        # showpatch = patch_attn[0][0][0:28, 0:28]
-        # print(f'patch_attn.shape: {showpatch.shape}')
-        # showpatch = showpatch.detach().cpu().numpy()
-        # plt.axis('off')
-        # plt.xticks([])
-        # plt.yticks([])
-        # plt.imshow(showpatch, cmap='gist_heat_r')
-        # plt.show()
 
         x_cls_logits = x.mean(-1)
 
         if return_att:
             return x_cls_logits, mtatt, patch_attn
         else:
-            return x_cls_logits, nce_output
+            return x_cls_logits, block11_x, block12_x
 
 
 @register_model
