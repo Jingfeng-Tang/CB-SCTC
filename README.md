@@ -1,5 +1,6 @@
 # CB-SCTC
 The pytorch code for our paper ''.
+Accepted by IEEE Transactions on Circuits and Systems for Video Technology
 
 [[Project Page]](https://github.com/Jingfeng-Tang/CB-SCTC)
 
@@ -34,6 +35,9 @@ bash run_for_PASCALVOC2012.sh
 ```
 bash run_for_MSCOCO2014.sh
 ```
+## ToDO
+- [ ] update latest code
+- [ ] add MCTformer+(w/ours) code
 
 ## Contact
 If you have any questions, you can either create issues or contact me by email
