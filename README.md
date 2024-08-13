@@ -1,11 +1,12 @@
 # CB-SCTC
-The pytorch code for our paper ''.
-Accepted by IEEE Transactions on Circuits and Systems for Video Technology
+The pytorch code for our paper 'Cross-block Sparse Class Token Contrast
+for Weakly Supervised Semantic Segmentation'.
+Accepted by \<IEEE Transactions on Circuits and Systems for Video Technology\>
 
 [[Project Page]](https://github.com/Jingfeng-Tang/CB-SCTC)
 
 <p align="center">
-  <img src="fig2_cb-sctc_8.png" width="1080" title="The architecture of the proposed WSSS framework(CB-SCTC)" >
+  <img src="readme_img/fig2.png" width="1080" title="The architecture of the proposed WSSS framework(CB-SCTC)" >
 </p>
 <p align = "center">
 Fig.1 - The architecture of the proposed WSSS framework(CB-SCTC)
