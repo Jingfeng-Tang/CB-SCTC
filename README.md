@@ -1,6 +1,5 @@
 ## [TCSVT] [Cross-block Sparse Class Token Contrast for Weakly Supervised Semantic Segmentation](https://ieeexplore.ieee.org/document/10634191)
-
-[[Project Page]](https://github.com/Jingfeng-Tang/CB-SCTC)
+[Code](https://github.com/Jingfeng-Tang/CB-SCTC)
 
 <p align="center">
   <img src="readme_img/fig2.png" width="1080" title="The architecture of the proposed WSSS framework(CB-SCTC)" >
