@@ -1,7 +1,4 @@
-# CB-SCTC
-The pytorch code for our paper 'Cross-block Sparse Class Token Contrast
-for Weakly Supervised Semantic Segmentation'.
-Accepted by \<IEEE Transactions on Circuits and Systems for Video Technology\>
+## [TCSVT] [Cross-block Sparse Class Token Contrast for Weakly Supervised Semantic Segmentation](https://ieeexplore.ieee.org/document/10634191)
 
 [[Project Page]](https://github.com/Jingfeng-Tang/CB-SCTC)
 
